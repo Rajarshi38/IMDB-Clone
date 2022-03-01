@@ -1,4 +1,3 @@
-import Navbar from "./Navbar";
 import Banner from "./Banner";
 import Trending from "./Trending";
 import Pagination from "./Pagination";
