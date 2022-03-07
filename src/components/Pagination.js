@@ -1,15 +1,4 @@
-import { useState } from "react";
-const Pagination = () => {
-    const [page, setPage] = useState(1);
-
-    const nextHandler = () => {
-        setPage(page + 1);
-    };
-    const previousHandler = () => {
-        if (page === 1) return;
-        setPage(page - 1);
-    };
-
+const Pagination = ({ page, nextHandler, previousHandler }) => {
     return (
         <div className="flex w-full justify-center mb-7 mt-7">
             <button
