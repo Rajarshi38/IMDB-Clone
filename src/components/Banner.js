@@ -8,7 +8,7 @@ const Banner = () => {
     useEffect(() => {
         const getBanner = async () => {
             setLoading(true);
-            const response = await getMovies();
+            const response = await getMovies(1);
             setBanner(response.results[0]);
             setLoading(false);
         };

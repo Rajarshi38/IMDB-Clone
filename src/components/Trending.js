@@ -4,10 +4,13 @@ import { TailSpin } from "react-loader-spinner";
 import Movie from "./Movies/Movie";
 import Pagination from "./Pagination";
 
+//Trending movies part and pagination is its child
 const Trending = () => {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
+    const [hover, setHover] = useState("");
+    const [favorites, setFavorites] = useState([]);
 
     const nextHandler = () => {
         setPage(page + 1);
@@ -16,6 +19,31 @@ const Trending = () => {
         if (page === 1) return;
         setPage(page - 1);
     };
+    const mouseEnter = (id) => {
+        setHover(id);
+    };
+
+    const mouseLeave = () => {
+        setHover("");
+    };
+
+    const addMovie = (movie) => {
+        const newArray = [...favorites, movie];
+        setFavorites(newArray);
+    };
+    const deleteMovie = (id) => {
+        const deleteIndex = favorites.findIndex((movie) => movie.id === id);
+        const newArray = [
+            ...favorites.slice(0, deleteIndex),
+            ...favorites.slice(deleteIndex + 1),
+        ];
+        setFavorites(newArray);
+    };
+    const findElement = (id) => {
+        const res = favorites.find((movie) => movie.id === id);
+        return res;
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -37,7 +65,7 @@ const Trending = () => {
         };
 
         fetchData();
-    }, []);
+    }, [page]);
 
     return (
         <>
@@ -60,8 +88,13 @@ const Trending = () => {
                         {movies.map((movie) => (
                             <Movie
                                 key={movie.id}
-                                title={movie.title}
-                                backdrop={movie.backdrop}
+                                movie={movie}
+                                mouseEnter={mouseEnter}
+                                mouseLeave={mouseLeave}
+                                hover={hover}
+                                addToFavorites={() => addMovie(movie)}
+                                findElement={findElement}
+                                deleteMovie={deleteMovie}
                             />
                         ))}
                     </div>

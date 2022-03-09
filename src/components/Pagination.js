@@ -1,3 +1,4 @@
+//Pagination component
 const Pagination = ({ page, nextHandler, previousHandler }) => {
     return (
         <div className="flex w-full justify-center mb-7 mt-7">
