@@ -29,7 +29,8 @@ const Trending = () => {
 
     const addMovie = (movie) => {
         const newArray = [...favorites, movie];
-        setFavorites(newArray);
+        setFavorites([...newArray]);
+        localStorage.setItem("imdb", JSON.stringify(newArray));
     };
     const deleteMovie = (id) => {
         const deleteIndex = favorites.findIndex((movie) => movie.id === id);
@@ -38,6 +39,7 @@ const Trending = () => {
             ...favorites.slice(deleteIndex + 1),
         ];
         setFavorites(newArray);
+        localStorage.setItem("imdb", JSON.stringify(newArray));
     };
     const findElement = (id) => {
         const res = favorites.find((movie) => movie.id === id);
@@ -49,17 +51,12 @@ const Trending = () => {
             setLoading(true);
             const response = await getMovies(page);
 
-            setMovies(
-                response.results.map((res) => {
-                    return {
-                        id: res.id,
-                        title: res.title ? res.title : res.name,
-                        rating: res.vote_average,
-                        backdrop: res.backdrop_path,
-                        media_type: res.media_type,
-                    };
-                })
-            );
+            setMovies(response.results);
+            let oldFavorites = localStorage.getItem("imdb");
+            if (!!oldFavorites) {
+                oldFavorites = JSON.parse(oldFavorites);
+                setFavorites([...oldFavorites]);
+            }
 
             setLoading(false);
         };

@@ -8,7 +8,7 @@ const Movie = ({
     findElement,
     deleteMovie,
 }) => {
-    const { id, title, backdrop } = movie;
+    const { id, title, backdrop_path: backdrop } = movie;
     return (
         <div
             style={{
