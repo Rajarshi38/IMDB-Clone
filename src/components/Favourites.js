@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import { allGenres } from "./Genres/Genre";
+import GenreButton from "./Buttons/GenreButton";
+import {
+    IoCaretUpCircleOutline,
+    IoCaretDownCircleOutline,
+} from "react-icons/io5";
+import { MdDelete } from "react-icons/md";
 const Favourites = () => {
     const [currentGenre, setCurrentGenre] = useState("All Genres");
 
     const [favourites, setFavourites] = useState([]);
     const [genres, setGenres] = useState([]);
 
+    const genreClickHandler = (genre) => {
+        setCurrentGenre(genre);
+    };
     useEffect(() => {
         let oldFavorites = localStorage.getItem("imdb");
         if (!!oldFavorites) {
@@ -18,28 +27,38 @@ const Favourites = () => {
         const currentGenreList = favourites.map(
             (movie) => allGenres[movie.genre_ids[0]]
         );
-        setGenres(currentGenreList);
+        setGenres([...new Set(currentGenreList)]);
     }, [favourites]);
     const filterGenre = (id) => {
         const genre = allGenres[id];
         return genre;
     };
+    const deleteMovie = (id) => {
+        const deleteIndex = favourites.findIndex((movie) => movie.id === id);
+        const newArray = [
+            ...favourites.slice(0, deleteIndex),
+            ...favourites.slice(deleteIndex + 1),
+        ];
+        setFavourites(newArray);
+        localStorage.setItem("imdb", JSON.stringify(newArray));
+    };
 
     return (
         <div className="font-body">
             <div className="favourites flex justify-center flex-wrap space-x-4">
-                <button
-                    className={
-                        currentGenre === "All Genres"
-                            ? "my-2 text-xl bg-blue-400 text-white rounded-md py-1 px-3 font-medium"
-                            : "my-2 text-xl bg-gray-500 hover:bg-blue-400 text-white rounded-md py-1 px-3 font-medium"
-                    }
-                >
-                    All Genres
-                </button>
-                <button className="my-2 text-xl bg-gray-500 hover:bg-blue-400 text-white rounded-md py-1 px-3 font-medium">
-                    Action
-                </button>
+                <GenreButton
+                    title="All Genres"
+                    genreClickHandler={genreClickHandler}
+                    currentGenre={currentGenre}
+                />
+                {genres.map((genre) => (
+                    <GenreButton
+                        key={genre}
+                        title={genre}
+                        genreClickHandler={genreClickHandler}
+                        currentGenre={currentGenre}
+                    />
+                ))}
             </div>
 
             <div className="text-center">
@@ -74,13 +93,29 @@ const Favourites = () => {
                                             scope="col"
                                             className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal"
                                         >
-                                            Rating
+                                            <div className="flex flex-col space-y-1 md:flex-row md:space-x-1 md:space-y-0">
+                                                <button>
+                                                    <IoCaretUpCircleOutline size="20px" />
+                                                </button>
+                                                <div>Rating</div>
+                                                <button>
+                                                    <IoCaretDownCircleOutline size="20px" />
+                                                </button>
+                                            </div>
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal"
                                         >
-                                            Popularity
+                                            <div className="flex flex-col space-y-1 md:flex-row md:space-x-1 md:space-y-0">
+                                                <button>
+                                                    <IoCaretUpCircleOutline size="20px" />
+                                                </button>
+                                                <div>Popularity</div>
+                                                <button>
+                                                    <IoCaretDownCircleOutline size="20px" />
+                                                </button>
+                                            </div>
                                         </th>
                                         <th
                                             scope="col"
@@ -90,8 +125,10 @@ const Favourites = () => {
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal"
-                                        ></th>
+                                            className="px-5 py-3 bg-white  border-b border-gray-200 text-red-600  text-left text-sm uppercase font-bold"
+                                        >
+                                            Action
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -115,17 +152,18 @@ const Favourites = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <td className="px-5 py-5 text-center border-b border-gray-200 bg-white text-sm">
                                                 <p className="text-gray-900 whitespace-no-wrap">
                                                     {fav.vote_average + "⭐"}
                                                 </p>
                                             </td>
-                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <td className="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                                 <p className="text-gray-900 whitespace-no-wrap">
-                                                    {fav.popularity + "❤️"}
+                                                    {fav.popularity.toFixed() +
+                                                        "❤️"}
                                                 </p>
                                             </td>
-                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <td className="px-[11px] py-5 border-b border-gray-200 bg-white text-sm">
                                                 <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                     <span
                                                         aria-hidden="true"
@@ -138,9 +176,14 @@ const Favourites = () => {
                                                     </span>
                                                 </span>
                                             </td>
-                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                <button className="text-red-700 hover:text-indigo-900">
-                                                    Delete
+                                            <td className="px-5 py-5 text-center border-b border-gray-200 bg-white text-sm">
+                                                <button
+                                                    onClick={() =>
+                                                        deleteMovie(fav.id)
+                                                    }
+                                                    className="hover:scale-125 transition-all ease-in-out duration-150"
+                                                >
+                                                    <MdDelete size={"26px"} />
                                                 </button>
                                             </td>
                                         </tr>
