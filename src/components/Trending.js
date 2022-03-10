@@ -10,7 +10,7 @@ const Trending = () => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [hover, setHover] = useState("");
-    const [favorites, setFavorites] = useState([]);
+    const [favourites, setFavourites] = useState([]);
 
     const nextHandler = () => {
         setPage(page + 1);
@@ -28,21 +28,21 @@ const Trending = () => {
     };
 
     const addMovie = (movie) => {
-        const newArray = [...favorites, movie];
-        setFavorites([...newArray]);
+        const newArray = [...favourites, movie];
+        setFavourites([...newArray]);
         localStorage.setItem("imdb", JSON.stringify(newArray));
     };
     const deleteMovie = (id) => {
-        const deleteIndex = favorites.findIndex((movie) => movie.id === id);
+        const deleteIndex = favourites.findIndex((movie) => movie.id === id);
         const newArray = [
-            ...favorites.slice(0, deleteIndex),
-            ...favorites.slice(deleteIndex + 1),
+            ...favourites.slice(0, deleteIndex),
+            ...favourites.slice(deleteIndex + 1),
         ];
-        setFavorites(newArray);
+        setFavourites(newArray);
         localStorage.setItem("imdb", JSON.stringify(newArray));
     };
     const findElement = (id) => {
-        const res = favorites.find((movie) => movie.id === id);
+        const res = favourites.find((movie) => movie.id === id);
         return res;
     };
 
@@ -50,12 +50,11 @@ const Trending = () => {
         const fetchData = async () => {
             setLoading(true);
             const response = await getMovies(page);
-
             setMovies(response.results);
             let oldFavorites = localStorage.getItem("imdb");
             if (!!oldFavorites) {
                 oldFavorites = JSON.parse(oldFavorites);
-                setFavorites([...oldFavorites]);
+                setFavourites([...oldFavorites]);
             }
 
             setLoading(false);
