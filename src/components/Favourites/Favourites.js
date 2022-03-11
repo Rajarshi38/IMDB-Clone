@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { allGenres } from "./Genres/Genre";
-import GenreButton from "./Buttons/GenreButton";
+import { allGenres } from "../Genres/Genre";
+import GenreButton from "../Buttons/GenreButton";
 import {
     IoCaretUpCircleOutline,
     IoCaretDownCircleOutline,
@@ -146,19 +146,19 @@ const Favourites = () => {
                                                         </div>
                                                     </div>
                                                     <div className="ml-3">
-                                                        <p className="text-gray-900 whitespace-no-wrap">
+                                                        <p className="text-gray-900 whitespace-normal">
                                                             {fav.title}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-5 py-5 text-center border-b border-gray-200 bg-white text-sm">
-                                                <p className="text-gray-900 whitespace-no-wrap">
+                                                <p className="text-gray-900 whitespace-nowrap">
                                                     {fav.vote_average + "⭐"}
                                                 </p>
                                             </td>
                                             <td className="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
-                                                <p className="text-gray-900 whitespace-no-wrap">
+                                                <p className="text-gray-900 whitespace-nowrap">
                                                     {fav.popularity.toFixed() +
                                                         "❤️"}
                                                 </p>

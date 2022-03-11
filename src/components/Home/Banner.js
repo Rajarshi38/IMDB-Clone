@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMovies } from "../api/Movies";
+import { getMovies } from "../../api/Movies";
 import BannerMovie from "./Banner/BannerMovie";
 import { TailSpin } from "react-loader-spinner";
 const Banner = () => {
@@ -28,7 +28,10 @@ const Banner = () => {
                     />
                 </div>
             ) : (
-                <BannerMovie title={banner.title} backdrop={banner.backdrop_path} />
+                <BannerMovie
+                    title={banner.title}
+                    backdrop={banner.backdrop_path}
+                />
             )}
         </div>
     );

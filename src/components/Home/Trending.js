@@ -1,8 +1,8 @@
-import { getMovies } from "../api/Movies";
+import { getMovies } from "../../api/Movies";
 import { useState, useEffect } from "react";
 import { TailSpin } from "react-loader-spinner";
-import Movie from "./Movies/Movie";
-import Pagination from "./Pagination";
+import Movie from "../Movies/Movie";
+import Pagination from "../Utils/Pagination";
 
 //Trending movies part and pagination is its child
 const Trending = () => {
