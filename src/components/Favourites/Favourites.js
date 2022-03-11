@@ -15,6 +15,37 @@ const Favourites = () => {
     const genreClickHandler = (genre) => {
         setCurrentGenre(genre);
     };
+
+    const sortByRatingIncreasing = () => {
+        const newArray = favourites.sort(
+            (m1, m2) => m1.vote_average - m2.vote_average
+        );
+        setFavourites([...newArray]);
+        // localStorage.setItem("imdb", JSON.stringify(newArray));
+    };
+    const sortByRatingDecreasing = () => {
+        const newArray = favourites.sort(
+            (m1, m2) => m2.vote_average - m1.vote_average
+        );
+        setFavourites([...newArray]);
+        // localStorage.setItem("imdb", JSON.stringify(newArray));
+    };
+
+    const sortByPopularityIncreasing = () => {
+        const newArray = favourites.sort(
+            (m1, m2) => m1.popularity - m2.popularity
+        );
+        setFavourites([...newArray]);
+    };
+
+    const sortByPopularityDecreasing = () => {
+        const newArray = favourites.sort(
+            (m1, m2) => m2.popularity - m1.popularity
+        );
+        setFavourites([...newArray]);
+    };
+
+    //getting the favourites array
     useEffect(() => {
         let oldFavorites = localStorage.getItem("imdb");
         if (!!oldFavorites) {
@@ -23,6 +54,7 @@ const Favourites = () => {
         setFavourites(oldFavorites);
     }, []);
 
+    //getting the genres
     useEffect(() => {
         const currentGenreList = favourites.map(
             (movie) => allGenres[movie.genre_ids[0]]
@@ -94,11 +126,19 @@ const Favourites = () => {
                                             className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal"
                                         >
                                             <div className="flex flex-col space-y-1 md:flex-row md:space-x-1 md:space-y-0">
-                                                <button>
+                                                <button
+                                                    onClick={
+                                                        sortByRatingIncreasing
+                                                    }
+                                                >
                                                     <IoCaretUpCircleOutline size="20px" />
                                                 </button>
                                                 <div>Rating</div>
-                                                <button>
+                                                <button
+                                                    onClick={
+                                                        sortByRatingDecreasing
+                                                    }
+                                                >
                                                     <IoCaretDownCircleOutline size="20px" />
                                                 </button>
                                             </div>
@@ -108,11 +148,19 @@ const Favourites = () => {
                                             className="px-5 py-3 bg-white  border-b border-gray-200 text-gray-800  text-left text-sm uppercase font-normal"
                                         >
                                             <div className="flex flex-col space-y-1 md:flex-row md:space-x-1 md:space-y-0">
-                                                <button>
+                                                <button
+                                                    onClick={
+                                                        sortByPopularityIncreasing
+                                                    }
+                                                >
                                                     <IoCaretUpCircleOutline size="20px" />
                                                 </button>
                                                 <div>Popularity</div>
-                                                <button>
+                                                <button
+                                                    onClick={
+                                                        sortByPopularityDecreasing
+                                                    }
+                                                >
                                                     <IoCaretDownCircleOutline size="20px" />
                                                 </button>
                                             </div>
