@@ -6,43 +6,55 @@ import {
     IoCaretDownCircleOutline,
 } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
+import Pagination from "./Pagination";
 const Favourites = () => {
     const [currentGenre, setCurrentGenre] = useState("All Genres");
-
     const [favourites, setFavourites] = useState([]);
     const [genres, setGenres] = useState([]);
+    const [sortRating, setSortRating] = useState(0); // -1,0,1
+    const [sortPopularity, setSortPopularity] = useState(0); //-1,0,1
+    const [search, setSearch] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rows, setRows] = useState(4);
+    let filteredArray = [];
 
     const genreClickHandler = (genre) => {
         setCurrentGenre(genre);
     };
 
+    //sorting the array based on rating in increasing order
     const sortByRatingIncreasing = () => {
-        const newArray = favourites.sort(
+        setSortPopularity(0);
+        setSortRating(1);
+        filteredArray = favourites.sort(
             (m1, m2) => m1.vote_average - m2.vote_average
         );
-        setFavourites([...newArray]);
-        // localStorage.setItem("imdb", JSON.stringify(newArray));
     };
+
+    //sorting the array based on rating in decreasing order
     const sortByRatingDecreasing = () => {
-        const newArray = favourites.sort(
+        setSortPopularity(0);
+        setSortRating(-1);
+        filteredArray = favourites.sort(
             (m1, m2) => m2.vote_average - m1.vote_average
         );
-        setFavourites([...newArray]);
-        // localStorage.setItem("imdb", JSON.stringify(newArray));
     };
 
+    //sorting the array based on popularity in increasing order
     const sortByPopularityIncreasing = () => {
-        const newArray = favourites.sort(
+        setSortRating(0);
+        setSortPopularity(1);
+        filteredArray = favourites.sort(
             (m1, m2) => m1.popularity - m2.popularity
         );
-        setFavourites([...newArray]);
     };
-
+    //sorting the array based on popularity in decreasing order
     const sortByPopularityDecreasing = () => {
-        const newArray = favourites.sort(
+        setSortRating(0);
+        setSortPopularity(-1);
+        filteredArray = favourites.sort(
             (m1, m2) => m2.popularity - m1.popularity
         );
-        setFavourites([...newArray]);
     };
 
     //getting the favourites array
@@ -61,10 +73,13 @@ const Favourites = () => {
         );
         setGenres([...new Set(currentGenreList)]);
     }, [favourites]);
+
+    //getting the genre name
     const filterGenre = (id) => {
         const genre = allGenres[id];
         return genre;
     };
+    //delete movie from favourites handler
     const deleteMovie = (id) => {
         const deleteIndex = favourites.findIndex((movie) => movie.id === id);
         const newArray = [
@@ -74,6 +89,47 @@ const Favourites = () => {
         setFavourites(newArray);
         localStorage.setItem("imdb", JSON.stringify(newArray));
     };
+
+    const previousHandler = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    const nextHandler = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const goToPageNumber = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+    const rowHandler = (e) => {
+        const value = e.target.value;
+        if (!!value && value > 0) setRows(value);
+    };
+
+    //for genre filter
+    filteredArray =
+        currentGenre === "All Genres"
+            ? favourites
+            : favourites.filter(
+                  (movie) => allGenres[movie.genre_ids[0]] === currentGenre
+              );
+    //for search filter
+
+    filteredArray =
+        search === ""
+            ? filteredArray
+            : filteredArray.filter((movie) =>
+                  movie.title.toLowerCase().includes(search.toLowerCase())
+              );
+
+    //pagination
+
+    let totalPages = Math.ceil(filteredArray.length / rows);
+    let startIndex = (currentPage - 1) * rows;
+    let endIndex = Number(startIndex) + Number(rows);
+    filteredArray = filteredArray.slice(startIndex, endIndex);
 
     return (
         <div className="font-body">
@@ -96,14 +152,16 @@ const Favourites = () => {
             <div className="text-center">
                 <input
                     type="text"
-                    name=""
-                    id=""
+                    name="search"
                     placeholder="Search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                     className="border-2 border-gray-400 text-center m-2 p-1 rounded-sm"
                 />
                 <input
-                    type="text"
+                    type="number"
                     placeholder="Rows"
+                    onChange={(e) => rowHandler(e)}
                     className="border-2 border-gray-400 text-center m-2 p-1 rounded-sm"
                 />
             </div>
@@ -180,7 +238,7 @@ const Favourites = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {favourites.map((fav) => (
+                                    {filteredArray.map((fav) => (
                                         <tr key={fav.id}>
                                             <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                 <div className="flex items-center">
@@ -211,7 +269,7 @@ const Favourites = () => {
                                                         "❤️"}
                                                 </p>
                                             </td>
-                                            <td className="px-[11px] py-5 border-b border-gray-200 bg-white text-sm">
+                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                 <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                     <span
                                                         aria-hidden="true"
@@ -238,64 +296,13 @@ const Favourites = () => {
                                     ))}
                                 </tbody>
                             </table>
-                            <div className="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
-                                <div className="flex items-center">
-                                    <button
-                                        type="button"
-                                        className="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100"
-                                    >
-                                        <svg
-                                            width="9"
-                                            fill="currentColor"
-                                            height="8"
-                                            className=""
-                                            viewBox="0 0 1792 1792"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
-                                        </svg>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100 "
-                                    >
-                                        1
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="w-full px-4 py-2 border text-base text-gray-600 bg-white hover:bg-gray-100"
-                                    >
-                                        2
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="w-full px-4 py-2 border-t border-b text-base text-gray-600 bg-white hover:bg-gray-100"
-                                    >
-                                        3
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="w-full px-4 py-2 border text-base text-gray-600 bg-white hover:bg-gray-100"
-                                    >
-                                        4
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="w-full p-4 border-t border-b border-r text-base  rounded-r-xl text-gray-600 bg-white hover:bg-gray-100"
-                                    >
-                                        <svg
-                                            width="9"
-                                            fill="currentColor"
-                                            height="8"
-                                            className=""
-                                            viewBox="0 0 1792 1792"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
+                            <Pagination
+                                previousHandler={previousHandler}
+                                nextHandler={nextHandler}
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                goToPageNumber={goToPageNumber}
+                            />
                         </div>
                     </div>
                 </div>
