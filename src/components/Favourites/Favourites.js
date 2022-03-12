@@ -59,7 +59,7 @@ const Favourites = () => {
 
     //getting the favourites array
     useEffect(() => {
-        let oldFavorites = localStorage.getItem("imdb");
+        let oldFavorites = localStorage.getItem("imdb") || [];
         if (!!oldFavorites) {
             oldFavorites = JSON.parse(oldFavorites);
         }
