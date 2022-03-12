@@ -269,7 +269,7 @@ const Favourites = () => {
                                                         "❤️"}
                                                 </p>
                                             </td>
-                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
                                                 <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                                     <span
                                                         aria-hidden="true"
