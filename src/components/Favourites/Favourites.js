@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { allGenres } from "../Genres/Genre";
 import GenreButton from "../Buttons/GenreButton";
 import {
     IoCaretUpCircleOutline,
@@ -7,16 +5,25 @@ import {
 } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
 import Pagination from "./Pagination";
+import useFavouriteArray from "./UseFavouritesArray";
+import { allGenres } from "../Genres/Genre";
 const Favourites = () => {
-    const [currentGenre, setCurrentGenre] = useState("All Genres");
-    const [favourites, setFavourites] = useState([]);
-    const [genres, setGenres] = useState([]);
-    const [sortRating, setSortRating] = useState(0); // -1,0,1
-    const [sortPopularity, setSortPopularity] = useState(0); //-1,0,1
-    const [search, setSearch] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rows, setRows] = useState(4);
-    let filteredArray = [];
+    const [
+        rows,
+        setRows,
+        currentPage,
+        setCurrentPage,
+        setSortRating,
+        setSortPopularity,
+        currentGenre,
+        setCurrentGenre,
+        genres,
+        filteredSortedPaginatedArray,
+        search,
+        setSearch,
+        deleteMovie,
+        totalPages,
+    ] = useFavouriteArray();
 
     const genreClickHandler = (genre) => {
         setCurrentGenre(genre);
@@ -24,113 +31,49 @@ const Favourites = () => {
 
     //sorting the array based on rating in increasing order
     const sortByRatingIncreasing = () => {
-        setSortPopularity(0);
         setSortRating(1);
-        filteredArray = favourites.sort(
-            (m1, m2) => m1.vote_average - m2.vote_average
-        );
+        setSortPopularity(0);
     };
 
     //sorting the array based on rating in decreasing order
     const sortByRatingDecreasing = () => {
-        setSortPopularity(0);
         setSortRating(-1);
-        filteredArray = favourites.sort(
-            (m1, m2) => m2.vote_average - m1.vote_average
-        );
+        setSortPopularity(0);
     };
 
     //sorting the array based on popularity in increasing order
     const sortByPopularityIncreasing = () => {
-        setSortRating(0);
         setSortPopularity(1);
-        filteredArray = favourites.sort(
-            (m1, m2) => m1.popularity - m2.popularity
-        );
+        setSortRating(0);
     };
     //sorting the array based on popularity in decreasing order
     const sortByPopularityDecreasing = () => {
-        setSortRating(0);
         setSortPopularity(-1);
-        filteredArray = favourites.sort(
-            (m1, m2) => m2.popularity - m1.popularity
-        );
+        setSortRating(0);
     };
 
-    //getting the favourites array
-    useEffect(() => {
-        let oldFavorites = localStorage.getItem("imdb");
-        if (!!oldFavorites) {
-            oldFavorites = JSON.parse(oldFavorites);
-            setFavourites(oldFavorites);
-        }
-    }, []);
-
-    //getting the genres
-    useEffect(() => {
-        const currentGenreList = favourites.map(
-            (movie) => allGenres[movie.genre_ids[0]]
-        );
-        setGenres([...new Set(currentGenreList)]);
-    }, [favourites]);
-
-    //getting the genre name
-    const filterGenre = (id) => {
-        const genre = allGenres[id];
-        return genre;
+    const nextHandler = () => {
+        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
     };
-    //delete movie from favourites handler
-    const deleteMovie = (id) => {
-        const deleteIndex = favourites.findIndex((movie) => movie.id === id);
-        const newArray = [
-            ...favourites.slice(0, deleteIndex),
-            ...favourites.slice(deleteIndex + 1),
-        ];
-        setFavourites(newArray);
-        localStorage.setItem("imdb", JSON.stringify(newArray));
-    };
-
     const previousHandler = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
     };
 
-    const nextHandler = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1);
-        }
+    const goToPageNumber = (page) => {
+        setCurrentPage(page);
     };
 
-    const goToPageNumber = (pageNumber) => {
-        setCurrentPage(pageNumber);
+    const searchHandler = (e) => {
+        setSearch(e.target.value);
     };
+
     const rowHandler = (e) => {
         const value = e.target.value;
-        if (!!value && value > 0) setRows(value);
+        if (value === 0) return;
+        if (value > 0) setRows(value);
     };
 
     //for genre filter
-    filteredArray =
-        currentGenre === "All Genres"
-            ? favourites
-            : favourites.filter(
-                  (movie) => allGenres[movie.genre_ids[0]] === currentGenre
-              );
-    //for search filter
-
-    filteredArray =
-        search === ""
-            ? filteredArray
-            : filteredArray.filter((movie) =>
-                  movie.title.toLowerCase().includes(search.toLowerCase())
-              );
-
-    //pagination
-
-    let totalPages = Math.ceil(filteredArray.length / rows);
-    let startIndex = (currentPage - 1) * rows;
-    let endIndex = Number(startIndex) + Number(rows);
-    filteredArray = filteredArray.slice(startIndex, endIndex);
-
     return (
         <div className="font-body">
             <div className="favourites flex justify-center flex-wrap space-x-4">
@@ -155,12 +98,13 @@ const Favourites = () => {
                     name="search"
                     placeholder="Search"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => searchHandler(e)}
                     className="border-2 border-gray-400 text-center m-2 p-1 rounded-sm"
                 />
                 <input
                     type="number"
                     placeholder="Rows"
+                    value={rows}
                     onChange={(e) => rowHandler(e)}
                     className="border-2 border-gray-400 text-center m-2 p-1 rounded-sm"
                 />
@@ -238,7 +182,7 @@ const Favourites = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredArray.map((fav) => (
+                                    {filteredSortedPaginatedArray.map((fav) => (
                                         <tr key={fav.id}>
                                             <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                 <div className="flex items-center">
@@ -276,9 +220,11 @@ const Favourites = () => {
                                                         className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
                                                     ></span>
                                                     <span className="relative">
-                                                        {filterGenre(
-                                                            fav.genre_ids[0]
-                                                        )}
+                                                        {
+                                                            allGenres[
+                                                                fav.genre_ids[0]
+                                                            ]
+                                                        }
                                                     </span>
                                                 </span>
                                             </td>

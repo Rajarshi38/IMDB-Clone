@@ -11,7 +11,7 @@ const Pagination = ({
     }
 
     return (
-        <div className="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
+        <div className="px-5 bg-white py-5 flex flex-col xs:flex-row items-center sm:justify-between">
             <div className="flex items-center">
                 <button
                     type="button"
